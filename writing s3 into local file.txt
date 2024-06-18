@@ -1,0 +1,18 @@
+This part of the code handles the actual file download and writing of data to the local file system. Here's an explanation of the code block:
+//go to the s3-server file 
+
+The if statement checks if obj.Body is an instance of a readable stream, which is an indication that it can be streamed (e.g., data from an HTTP response or S3 object).
+
+Inside the if block, a writable stream is created using fs.createWriteStream(file_name). This stream will represent the local file where the data from the S3 object will be written.
+
+The file.on("open", ...) event handler is used to wait for the file to be opened for writing before proceeding. This event is emitted when the file is opened, and it provides a file descriptor (fd) as a parameter to the callback function.
+
+Within this event handler, obj.Body (the readable stream from S3) is piped into the file writable stream. This effectively starts streaming the data from S3 to the local file. The .pipe method is used for this purpose, and it connects the readable stream to the writable stream.
+
+The .on("finish", ...) event handler is attached to the output of the .pipe operation. It indicates that the streaming has finished successfully, meaning that all data from S3 has been written to the local file.
+
+If the file writing operation is successful, the resolve(file_name) line is executed. This means the promise will be resolved with the file_name, indicating that the download and save operation was successful.
+
+If there is an error at any point in this block (e.g., due to a failure in opening the file, writing the data, or any other issue), the catch block will handle the error. It logs the error to the console using console.error, rejects the promise with the error, and returns null.
+
+This code ensures that the data from the S3 object is correctly streamed and written to a local file, handling any potential errors that may occur during this process. It's a key part of the overall function that downloads a file from Amazon S3 and saves it to the local file system.
